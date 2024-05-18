@@ -3,9 +3,12 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   mode: process.env.NODE_ENV || 'production',
-  entry: path.join(__dirname, 'src', 'index.js'),
+  entry: {
+    application: './src/index.js'
+  },
   output: {
-    path: path.resolve(__dirname, 'dist'),
+    filename: '[name]-[fullhash].js',
+    path: path.resolve(__dirname, 'build'),
   },
   devServer: {
     compress: true,
@@ -13,7 +16,7 @@ module.exports = {
     host: 'localhost',
     port: 3000,
     static: {
-      directory: path.join(__dirname, 'static'),
+      directory: path.join(__dirname, 'public'),
       publicPath: '/',
     },
     client: {
@@ -52,9 +55,20 @@ module.exports = {
       }
     ]
   },
+  optimization: {
+    splitChunks: {
+      cacheGroups: {
+        commons: {
+          test: /[\\/]node_modules[\\/](react|react-dom|react-router-dom|styled-components)[\\/]/,
+          name: "vendor.min",
+          chunks: "all"
+        }
+      }
+    }
+  },
   plugins: [
     new HtmlWebpackPlugin({
-      template: path.join(__dirname, 'static', 'index.html'),
+      template: path.join(__dirname, 'public', 'index.html'),
     }),
   ],
 }
